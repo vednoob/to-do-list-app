@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 function Input() {
   const [job, setJob] = useState("");
@@ -27,14 +27,12 @@ function Input() {
     inputRef.current.focus();
   };
 
-  useEffect(() => {}, []);
-
   const handleDelete = (index) => {
     const jsonJobs = JSON.parse(localStorage.getItem("jobs"));
 
-    const newJobs = JSON.stringify(jsonJobs.splice(index, 1));
-
-    localStorage.setItem("jobs", newJobs);
+    const newJobs = [...jsonJobs.slice(0, index), ...jsonJobs.slice(index + 1)];
+    localStorage.setItem("jobs", JSON.stringify(newJobs));
+    setJobs(newJobs);
   };
 
   return (
