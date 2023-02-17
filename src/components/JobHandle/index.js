@@ -20,6 +20,11 @@ function JobHandle() {
       jobName: job,
     };
 
+    if (job === "") {
+      inputRef.current.focus();
+      return;
+    }
+
     fetch("http://localhost:3000/jobs", {
       method: "POST",
       headers: {

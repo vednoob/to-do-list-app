@@ -1,8 +1,15 @@
-import { SET_JOB, ADD_JOB, DELETE_JOB, SET_JOBS } from "./actions";
+import {
+  SET_JOB,
+  ADD_JOB,
+  DELETE_JOB,
+  SET_JOBS,
+  SET_JOBS_DONE,
+} from "./actions";
 
 export const initState = {
   job: "",
   jobs: [],
+  jobsDone: [],
 };
 
 const reducer = (state, action) => {
@@ -28,6 +35,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         jobs: action.payload,
+      };
+    case SET_JOBS_DONE:
+      return {
+        ...state,
+        jobsDone: action.payload,
       };
     default:
       throw new Error("Invalid action");
