@@ -1,38 +1,34 @@
-import { useState, useRef } from "react";
+import { useReducer, useRef, useEffect } from "react";
+import reducer from "./reducer";
+import { initState } from "./reducer";
+import { addJob, setJob, deleteJob, setJobs } from "./actions";
 
 function JobHandle() {
-  const [job, setJob] = useState("");
-  const [jobs, setJobs] = useState(
-    (function () {
-      const storageJobs = JSON.parse(localStorage.getItem("jobs"));
-      return storageJobs;
-    })() ?? []
-  );
+  useEffect(() => {
+    fetch("http://localhost:3000/jobs")
+      .then((res) => res.json())
+      .then((jobs) => {
+        // dispatch an action to update the state with the jobs data
+        dispatch(setJobs(jobs));
+      });
+  }, []);
 
+  const [state, dispatch] = useReducer(reducer, initState);
+
+  const { job, jobs } = state;
   const inputRef = useRef(null);
 
   const handleSubmit = () => {
+    dispatch(addJob(job));
     if (job === "") {
       return;
     }
-    setJobs((prev) => {
-      const newJobs = [...prev, job];
-
-      const jsonJobs = JSON.stringify(newJobs);
-      localStorage.setItem("jobs", jsonJobs);
-
-      return newJobs;
-    });
-    setJob("");
+    dispatch(setJob(""));
     inputRef.current.focus();
   };
 
   const handleDelete = (index) => {
-    const jsonJobs = JSON.parse(localStorage.getItem("jobs"));
-
-    const newJobs = [...jsonJobs.slice(0, index), ...jsonJobs.slice(index + 1)];
-    localStorage.setItem("jobs", JSON.stringify(newJobs));
-    setJobs(newJobs);
+    dispatch(deleteJob(index));
   };
 
   return (
@@ -40,7 +36,9 @@ function JobHandle() {
       <input
         ref={inputRef}
         value={job}
-        onChange={(e) => setJob(e.target.value)}
+        onChange={(e) => {
+          dispatch(setJob(e.target.value));
+        }}
       />
       <button onClick={handleSubmit}>Add</button>
       <ul>
