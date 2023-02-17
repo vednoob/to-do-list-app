@@ -1,34 +1,66 @@
 import { useReducer, useRef, useEffect } from "react";
 import reducer from "./reducer";
 import { initState } from "./reducer";
-import { addJob, setJob, deleteJob, setJobs } from "./actions";
+import { addJob, setJob, setJobs } from "./actions";
 
 function JobHandle() {
+  const [state, dispatch] = useReducer(reducer, initState);
+  const { job, jobs } = state;
+  const inputRef = useRef(null);
   useEffect(() => {
     fetch("http://localhost:3000/jobs")
       .then((res) => res.json())
       .then((jobs) => {
-        // dispatch an action to update the state with the jobs data
         dispatch(setJobs(jobs));
       });
-  }, []);
+  }, [jobs]);
 
-  const [state, dispatch] = useReducer(reducer, initState);
+  const handleSubmit = (job) => {
+    const jobData = {
+      jobName: job,
+    };
 
-  const { job, jobs } = state;
-  const inputRef = useRef(null);
-
-  const handleSubmit = () => {
-    dispatch(addJob(job));
-    if (job === "") {
-      return;
-    }
-    dispatch(setJob(""));
-    inputRef.current.focus();
+    fetch("http://localhost:3000/jobs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jobData),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
+      .then((job) => {
+        dispatch(addJob(job));
+        dispatch(setJob(""));
+        inputRef.current.focus();
+      })
+      .catch((error) => {
+        console.error("Error adding job:", error);
+        // Handle error state here
+      });
   };
 
-  const handleDelete = (index) => {
-    dispatch(deleteJob(index));
+  const handleDelete = (id) => {
+    fetch(`http://localhost:3000/jobs/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
+      .catch((error) => {
+        console.error("Error deleting job:", error);
+        // Handle error state here
+      });
   };
 
   return (
@@ -40,12 +72,12 @@ function JobHandle() {
           dispatch(setJob(e.target.value));
         }}
       />
-      <button onClick={handleSubmit}>Add</button>
+      <button onClick={() => handleSubmit(job)}>Add</button>
       <ul>
         {jobs.map((job, index) => (
           <li key={index}>
-            {job}
-            <span onClick={() => handleDelete(index)}>&times;</span>
+            {job.jobName}
+            <span onClick={() => handleDelete(job.id)}>&times;</span>
           </li>
         ))}
       </ul>
