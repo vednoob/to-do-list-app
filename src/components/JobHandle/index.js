@@ -1,21 +1,22 @@
 import { useReducer, useRef, useEffect } from "react";
 import reducer from "./reducer";
 import { initState } from "./reducer";
-import { addJob, setJob, setJobs, setJobsDone } from "./actions";
+import { addJob, setJob, setJobs } from "./actions";
 
 function JobHandle() {
   const [state, dispatch] = useReducer(reducer, initState);
-  const { job, jobs, jobsDone } = state;
+  const { job, jobs } = state;
   const inputRef = useRef(null);
+
   useEffect(() => {
     fetch("http://localhost:3000/jobs")
       .then((res) => res.json())
       .then((jobs) => {
         dispatch(setJobs(jobs));
       });
-  }, [jobsDone]);
+  }, []);
 
-  const handleSubmit = (job) => {
+  useEffect(function handleSubmit(job) {
     const jobData = {
       jobName: job,
     };
@@ -45,11 +46,10 @@ function JobHandle() {
       })
       .catch((error) => {
         console.error("Error adding job:", error);
-        // Handle error state here
       });
-  };
+  }, []);
 
-  const handleDelete = (id, jobName) => {
+  const handleDelete = (id) => {
     fetch(`http://localhost:3000/jobs/${id}`, {
       method: "DELETE",
       headers: {
@@ -64,33 +64,6 @@ function JobHandle() {
       })
       .catch((error) => {
         console.error("Error deleting job:", error);
-        // Handle error state here
-      });
-
-    // post jobsdone
-    const jobData = {
-      jobName: jobName,
-    };
-
-    fetch("http://localhost:3000/jobsDone", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(jobData),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      })
-      .then((job) => {
-        dispatch(setJobsDone(job));
-      })
-      .catch((error) => {
-        console.error("Error adding job:", error);
-        // Handle error state here
       });
   };
 
@@ -103,14 +76,12 @@ function JobHandle() {
           dispatch(setJob(e.target.value));
         }}
       />
-      <button onClick={() => handleSubmit(job)}>Add</button>
+      {/* <button{ onClick={() => handleSubmit(job)}}>Add</button> */}
       <ul>
         {jobs.map((job, index) => (
           <li key={index}>
             {job.jobName}
-            <span onClick={() => handleDelete(job.id, job.jobName)}>
-              &times;
-            </span>
+            <span onClick={() => handleDelete(job.id, jobs)}>&times;</span>
           </li>
         ))}
       </ul>

@@ -7,8 +7,6 @@ function JobDone() {
   const [state, dispatch] = useReducer(reducer, initState);
   const { jobs, jobsDone } = state;
 
-  // const [jobsDone, setJobsDone] = useState([]);
-
   useEffect(() => {
     fetch("http://localhost:3000/jobsDone")
       .then((res) => {
