@@ -5,7 +5,7 @@ import { addJob, setJob, setJobs, setJobsDone } from "./actions";
 
 function JobHandle() {
   const [state, dispatch] = useReducer(reducer, initState);
-  const { job, jobs } = state;
+  const { job, jobs, jobsDone } = state;
   const inputRef = useRef(null);
   useEffect(() => {
     fetch("http://localhost:3000/jobs")
@@ -13,7 +13,7 @@ function JobHandle() {
       .then((jobs) => {
         dispatch(setJobs(jobs));
       });
-  }, [jobs]);
+  }, [jobsDone]);
 
   const handleSubmit = (job) => {
     const jobData = {
