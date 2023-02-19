@@ -1,7 +1,11 @@
 import JobDone from "../../components/JobDone";
 
 function DoneContent() {
-  return <div></div>;
+  return (
+    <div>
+      <JobDone />
+    </div>
+  );
 }
 
 export default DoneContent;

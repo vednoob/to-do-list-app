@@ -4,7 +4,7 @@ import TodoList from "../../components/GPTTodo";
 function Home() {
   return (
     <div>
-      <TodoList />
+      <JobHandle />
     </div>
   );
 }

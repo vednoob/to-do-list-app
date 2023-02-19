@@ -16,7 +16,7 @@ function JobHandle() {
       });
   }, []);
 
-  useEffect(function handleSubmit(job) {
+  const handleSubmit = (job) => {
     const jobData = {
       jobName: job,
     };
@@ -47,7 +47,7 @@ function JobHandle() {
       .catch((error) => {
         console.error("Error adding job:", error);
       });
-  }, []);
+  };
 
   const handleDelete = (id) => {
     fetch(`http://localhost:3000/jobs/${id}`, {
@@ -76,7 +76,7 @@ function JobHandle() {
           dispatch(setJob(e.target.value));
         }}
       />
-      {/* <button{ onClick={() => handleSubmit(job)}}>Add</button> */}
+      <button onClick={() => handleSubmit(job)}>Add</button>
       <ul>
         {jobs.map((job, index) => (
           <li key={index}>
